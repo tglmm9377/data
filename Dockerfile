@@ -6,5 +6,6 @@ MAINTAINER tglmm
 # RUN yum -y install nginx
 # RUN echo "this docker of nginx" > /usr/share/nginx/html/index.html
 RUN echo `date` >> /opt/ip.txt
+RUN curl http://pv.sohu.com/cityjson >> /opt/ip.txt
 # EXPOSE 80
 # ENTRYPOINT ["/usr/sbin/nginx"]
