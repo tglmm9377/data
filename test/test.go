@@ -3,7 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	_"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -21,10 +21,44 @@ type Mysql struct{
 	Database string `yaml:"database"`
 }
 
+func GetUserList()[]string{
+	username := os.Args[1]
+	if strings.Contains(username,","){
+		userSplit := strings.Split(username , ",")
+		for index, user := range userSplit{
+			if user == ""{
+				//[1,2,3,4,5]
+				userSplit = append(userSplit[:index],userSplit[index+1:]...)
+			}
+		}
+		if len(userSplit) ==  0{
+			fmt.Println("错误的参数输入,",username)
+			os.Exit(1)
+		}else {
+			return userSplit
+		}
+	}
+		return []string{username}
+
+}
+
+
+//func main(){
+//	defer func() {
+//		err := recover()
+//		errstr := fmt.Sprintf("%s" , err)
+//		if errstr == "runtime error: index out of range [1] with length 1"{
+//			fmt.Println("请输入正确的参数，例如bob|bob,tom,jerry")
+//		}
+//	}()
+//	userlist := GetUserList()
+//}
+
+
 func main() {
 
 	// 获取用户名
-	username := os.Args[1]
+	userList := GetUserList()
 
 	var mysqlInfo map[string]Mysql
 	// 读取文件
@@ -78,15 +112,24 @@ func main() {
 			}
 		}
 	}
-	var uid int
-	r := db.QueryRow("select uid from user where username=?" , username)
-	r.Scan(&uid)
-	if uid == 0{
-		os.Exit(0)
-	}
-	date := time.Now().Unix()
-	for id := range tempId{
-		db.Exec("insert into dzz_organization_user values(? , ? , 0 , ?)" , id , uid , date)
+	for username := range userList {
+		var uid int
+		r := db.QueryRow("select uid from dzz_user where username=?", username)
+		err := r.Scan(&uid)
+		if err != nil && err == sql.ErrNoRows{
+			fmt.Println("没有在数据库中查询到用户:",username,"跳过对该用户的授权")
+			continue
+		}else if err !=nil{
+			fmt.Println("在数据库中查询用户",username,"时候发生错误:",err)
+			os.Exit(1)
+		}
+		if uid == 0 {
+			os.Exit(0)
+		}
+		date := time.Now().Unix()
+		for id := range tempId {
+			db.Exec("insert into dzz_organization_user values(? , ? , 0 , ?)", id, uid, date)
+		}
 	}
 
 }
