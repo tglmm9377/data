@@ -1,0 +1,7 @@
+mysql:
+  username: root
+  password: 123
+  port: 3306
+  network: tcp
+  server: localhost
+  database: amz
