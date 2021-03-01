@@ -168,6 +168,7 @@ func main() {
 				os.Exit(1)
 			}
 		}
+		fmt.Println("用户:",username,"授权成功!")
 	}
 
 
