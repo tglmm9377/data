@@ -39,8 +39,8 @@ func init()  {
 		fmt.Println(usage)
 		os.Exit(0)
 	}
-	//GetMysqlInfo()
-	//GetMysqlConn()
+	GetMysqlInfo()
+	GetMysqlConn()
 }
 
 func GetUserList()[]string{
