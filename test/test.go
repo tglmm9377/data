@@ -122,7 +122,6 @@ func main() {
 	tempId := []int{}
 	for  rows.Next(){
 		rows.Scan(&colums[0])
-		fmt.Println(colums[0])
 		temp := strings.Split(colums[0] , "_")
 		orgid , err := strconv.Atoi(temp[len(temp)-2:len(temp)-1][0])
 		if err != nil {
@@ -131,9 +130,8 @@ func main() {
 		}
 		tempId = append(tempId , orgid)
 	}
-	fmt.Println(tempId)
 	// 获取forigid
-	rows , _ = db.Query("select forgid from dzz_organizationls")
+	rows , _ = db.Query("select forgid from dzz_organization")
 	colums , _ = rows.Columns()
 	for rows.Next(){
 		rows.Scan(&colums[0])
@@ -148,7 +146,7 @@ func main() {
 			}
 		}
 	}
-	for username := range userList {
+	for _ , username := range userList {
 		var uid int
 		r := db.QueryRow("select uid from dzz_user where username=?", username)
 		err := r.Scan(&uid)
@@ -164,7 +162,11 @@ func main() {
 		}
 		date := time.Now().Unix()
 		for id := range tempId {
-			db.Exec("insert into dzz_organization_user values(? , ? , 0 , ?)", id, uid, date)
+			_ , err = db.Exec("insert into dzz_organization_user values(? , ? , 0 , ?)", id, uid, date)
+			if err != nil{
+				fmt.Println("授权失败：",err)
+				os.Exit(1)
+			}
 		}
 	}
 
@@ -173,8 +175,11 @@ func main() {
 		defer func() {
 			err := recover()
 			errstr := fmt.Sprintf("%s" , err)
-			if errstr == "runtime error: index out of range [1] with length 1"{
-				fmt.Println("请输入正确的参数，例如bob|bob,tom,jerry")
+			if err != nil{
+
+				if errstr == "runtime error: index out of range [1] with length 1"{
+					fmt.Println("请输入正确的参数，例如bob|bob,tom,jerry")
+				}
 			}
 		}()
 
