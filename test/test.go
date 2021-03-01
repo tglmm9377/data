@@ -5,6 +5,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/yaml.v2"
@@ -18,6 +19,7 @@ import (
 
 var mysqlConfig Mysql
 var db *sql.DB
+var help *bool
 
 type Mysql struct{
 	Username string `yaml:"username"`
@@ -29,8 +31,16 @@ type Mysql struct{
 }
 
 func init()  {
-	GetMysqlInfo()
-	GetMysqlConn()
+	usage := "1.第一个参数输入all,将dzzoffice所有用户执行授权操作\n2.第一个参数为用户名，例如:user01 则表示给user01用户授权\n3.第一个参数为 user01,user02,user03... 表示给多个用户授权"
+
+	help = flag.Bool("h", false, usage)
+	flag.Parse()
+	if *help{
+		fmt.Println(usage)
+		os.Exit(0)
+	}
+	//GetMysqlInfo()
+	//GetMysqlConn()
 }
 
 func GetUserList()[]string{
