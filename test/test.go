@@ -169,9 +169,10 @@ func main() {
 			}
 		}
 	}
+
 	for _ , username := range userList {
-		var uid int
 		r := db.QueryRow("select uid from dzz_user where username=?", username)
+		var uid int
 		err := r.Scan(&uid)
 		if err != nil && err == sql.ErrNoRows{
 			fmt.Println("没有在数据库中查询到用户:",username,"跳过对该用户的授权")
@@ -183,10 +184,10 @@ func main() {
 		if uid == 0 {
 			os.Exit(0)
 		}
+		db.Exec("delete from dzz_organization_user where uid=?", uid)
 		date := time.Now().Unix()
 		for id := range tempId {
 			// 先从将之前的授权信息删除
-			db.Exec("delete from dzz_organization_user where uid=?", uid)
 			_ , err = db.Exec("insert into dzz_organization_user values(? , ? , 0 , ?)", id, uid, date)
 			if err != nil{
 				fmt.Println("授权失败：",err)
