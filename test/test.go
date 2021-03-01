@@ -111,7 +111,17 @@ func GetMysqlConn(){
 
 
 func main() {
+	// 异常处理
+	defer func() {
+		err := recover()
+		errstr := fmt.Sprintf("%s" , err)
+		if err != nil{
 
+			if errstr == "runtime error: index out of range [1] with length 1"{
+				fmt.Println("请输入正确的参数，例如bob|bob,tom,jerry")
+			}
+		}
+	}()
 	// 获取用户名
 	userList := GetUserList()
 
@@ -174,17 +184,7 @@ func main() {
 	}
 
 
-	// 异常处理
-		defer func() {
-			err := recover()
-			errstr := fmt.Sprintf("%s" , err)
-			if err != nil{
 
-				if errstr == "runtime error: index out of range [1] with length 1"{
-					fmt.Println("请输入正确的参数，例如bob|bob,tom,jerry")
-				}
-			}
-		}()
 
 
 }
