@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+
+var mysqlConfig Mysql
+var db *sql.DB
+
 type Mysql struct{
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
@@ -19,6 +23,11 @@ type Mysql struct{
 	Server string `yaml:"server"`
 	Port int `yaml:"port"`
 	Database string `yaml:"database"`
+}
+
+func init()  {
+	GetMysqlInfo()
+	GetMysqlConn()
 }
 
 func GetUserList()[]string{
@@ -37,29 +46,35 @@ func GetUserList()[]string{
 		}else {
 			return userSplit
 		}
+	}else if username == "all"{
+		return GetAllUsers(db)
 	}
-		return []string{username}
+	return []string{username}
+
+}
+
+func GetAllUsers(db *sql.DB)[]string{
+	out , err := db.Prepare("select username from dzz_user where uid!=?")
+	if err !=nil{
+		fmt.Println("select all users error:",err)
+		os.Exit(1)
+	}
+	rows , err := out.Query(1)
+	var UserList []string
+	var username string
+	for rows.Next(){
+		err := rows.Scan(&username)
+		if err != nil{
+			fmt.Println("select all user scan error:",err)
+		}
+		UserList = append(UserList , username)
+	}
+	return UserList
 
 }
 
 
-//func main(){
-//	defer func() {
-//		err := recover()
-//		errstr := fmt.Sprintf("%s" , err)
-//		if errstr == "runtime error: index out of range [1] with length 1"{
-//			fmt.Println("请输入正确的参数，例如bob|bob,tom,jerry")
-//		}
-//	}()
-//	userlist := GetUserList()
-//}
-
-
-func main() {
-
-	// 获取用户名
-	userList := GetUserList()
-
+func GetMysqlInfo(){
 	var mysqlInfo map[string]Mysql
 	// 读取文件
 	conf , err := ioutil.ReadFile("config.yml")
@@ -72,13 +87,34 @@ func main() {
 		fmt.Println("解析文件错误",err)
 		os.Exit(1)
 	}
-	DB := mysqlInfo["mysql"]
-	dsn := fmt.Sprintf("%s:%s@%s(%s:%d)/%s", DB.Username, DB.Password, DB.Network, DB.Server, DB.Port, DB.Database)
+	mysqlConfig = mysqlInfo["mysql"]
+
+}
+
+func GetMysqlConn(){
+	dsn := fmt.Sprintf("%s:%s@%s(%s:%d)/%s", mysqlConfig.Username, mysqlConfig.Password, mysqlConfig.Network, mysqlConfig.Server, mysqlConfig.Port, mysqlConfig.Database)
 	//fmt.Println(dsn)
-	db , err := sql.Open("mysql" , dsn)
+	dbcon , err := sql.Open("mysql" , dsn)
 	if err != nil{
 		fmt.Println("open connection err:",err)
+		os.Exit(1)
 	}
+	err = dbcon.Ping()
+	if err == nil{
+		fmt.Println("数据库连接成功✌️")
+	}else{
+		fmt.Println("连接数据库失败🙅‍♂️")
+	}
+	db = dbcon
+}
+
+
+
+func main() {
+
+	// 获取用户名
+	userList := GetUserList()
+
 	defer db.Close()
 	rows , _ := db.Query("select pathkey from dzz_organization")
 	colums , _ := rows.Columns()
@@ -131,5 +167,16 @@ func main() {
 			db.Exec("insert into dzz_organization_user values(? , ? , 0 , ?)", id, uid, date)
 		}
 	}
+
+
+	// 异常处理
+		defer func() {
+			err := recover()
+			errstr := fmt.Sprintf("%s" , err)
+			if errstr == "runtime error: index out of range [1] with length 1"{
+				fmt.Println("请输入正确的参数，例如bob|bob,tom,jerry")
+			}
+		}()
+
 
 }
