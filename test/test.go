@@ -162,6 +162,8 @@ func main() {
 		}
 		date := time.Now().Unix()
 		for id := range tempId {
+			// 先从将之前的授权信息删除
+			db.Exec("delete from dzz_organization_user where uid=?", uid)
 			_ , err = db.Exec("insert into dzz_organization_user values(? , ? , 0 , ?)", id, uid, date)
 			if err != nil{
 				fmt.Println("授权失败：",err)
