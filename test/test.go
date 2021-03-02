@@ -170,7 +170,7 @@ func main() {
 			}
 		}
 	}
-
+	fmt.Println(tempId)
 	for _ , username := range userList {
 		r := db.QueryRow("select uid from dzz_user where username=?", username)
 		var uid int
