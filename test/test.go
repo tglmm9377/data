@@ -153,7 +153,7 @@ func main() {
 		}
 		tempId = append(tempId , orgid)
 	}
-	fmt.Println(tempId)
+	//fmt.Println(tempId)
 	// 获取forigid
 	rows , _ = db.Query("select forgid from dzz_organization")
 	colums , _ = rows.Columns()
@@ -170,7 +170,7 @@ func main() {
 			}
 		}
 	}
-	fmt.Println(tempId)
+	//fmt.Println(tempId)
 	for _ , username := range userList {
 		r := db.QueryRow("select uid from dzz_user where username=?", username)
 		var uid int
@@ -199,11 +199,12 @@ func main() {
 		db.Exec("delete from dzz_organization_user where uid=?", uid)
 		date := time.Now().Unix()
 		for id := range tempId {
+			fmt.Println("授权organization id:",id)
 			// 先从将之前的授权信息删除
 			_ , err = db.Exec("insert into dzz_organization_user values(? , ? , 0 , ?)", id, uid, date)
 			if err != nil{
 				fmt.Println("授权失败：",err)
-				os.Exit(1)
+				continue
 			}
 		}
 		fmt.Println("用户:",username,"授权成功!")
