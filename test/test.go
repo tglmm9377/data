@@ -170,7 +170,7 @@ func main() {
 			}
 		}
 	}
-	fmt.Println(tempId)
+	//fmt.Println(tempId)
 	for _ , username := range userList {
 		r := db.QueryRow("select uid from dzz_user where username=?", username)
 		var uid int
@@ -199,7 +199,6 @@ func main() {
 		db.Exec("delete from dzz_organization_user where uid=?", uid)
 		date := time.Now().Unix()
 		for _, id := range tempId {
-			fmt.Println("授权organization id:",id)
 			// 先从将之前的授权信息删除
 			_ , err = db.Exec("insert into dzz_organization_user values(? , ? , 0 , ?)", id, uid, date)
 			if err != nil{
