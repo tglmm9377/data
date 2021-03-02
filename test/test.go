@@ -184,14 +184,15 @@ func main() {
 		// 此处判断用户是否为管理员， 如果是管理员不进行操作
 		var adminid , groupid int
 		row ,err:= db.Query("select adminid , groupid from dzz_user where uid=?" , uid)
+		if err != nil{
+			fmt.Println("select adminid & groupid error :",err)
+			os.Exit(1)
+		}
+
 		row.Scan(&adminid , &groupid)
 		if adminid == 1 && groupid == 1{
 			fmt.Println(username,"用户是管理员,跳过授权操作")
 			continue
-		}
-		if err != nil{
-			fmt.Println("select adminid & groupid error :",err)
-			os.Exit(1)
 		}
 
 		db.Exec("delete from dzz_organization_user where uid=?", uid)
