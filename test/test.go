@@ -153,6 +153,7 @@ func main() {
 		}
 		tempId = append(tempId , orgid)
 	}
+	fmt.Println(tempId)
 	// 获取forigid
 	rows , _ = db.Query("select forgid from dzz_organization")
 	colums , _ = rows.Columns()
@@ -207,9 +208,6 @@ func main() {
 		}
 		fmt.Println("用户:",username,"授权成功!")
 	}
-
-
-
 
 
 }
