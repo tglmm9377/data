@@ -183,7 +183,7 @@ func main() {
 		}
 		// 此处判断用户是否为管理员， 如果是管理员不进行操作
 		var adminid , groupid int
-		row ,err:= db.Query("select adminid , groupid where uid=?" , uid)
+		row ,err:= db.Query("select adminid , groupid from dzz_user where uid=?" , uid)
 		row.Scan(adminid , groupid)
 		if adminid == 1 && groupid == 1{
 			fmt.Println(username,"用户是管理员,跳过授权操作")
