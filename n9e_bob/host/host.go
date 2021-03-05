@@ -11,6 +11,8 @@ var N9e_server = "72.160.3.56"
 
 const GetAllHostsApi  string = "/api/ams-ce/hosts"
 
+const token = "5db38d09ff83ec7c39856c5e2b822f5e"
+
 
 type HostInfo struct{
 	Id int `json:"id"`
@@ -37,12 +39,32 @@ type Dat struct {
 	Total string `json:"total"`
 }
 
+var Client *http.Client
+
+
+func SetClient(url  string)error{
+	client := &http.Client{}
+	req , err := http.NewRequest("GET" , url , nil)
+	if err != nil{
+		fmt.Println(err)
+		return err
+	}
+	req.Header.Set("X-User-Token" , token)
+	_ , err = client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	Client = client
+	return nil
+}
+
 
 func GetHosts()*Hosts{
-
+	//X-User-Token: xxxx"
 	var hosts Hosts
 	url := "http://" + N9e_server + GetAllHostsApi
-	resp , err := http.Get(url)
+	resp , err := Client.Get(url)
 	if err != nil{
 		fmt.Println("GetHost Get method Error:",err)
 		return nil
