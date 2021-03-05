@@ -43,38 +43,20 @@ var Client *http.Client
 var url string = "http://"+N9e_server + GetAllHostsApi
 
 
-func init(){
-	SetClient(url)
-}
 
-func SetClient(url  string)error{
-	client := &http.Client{}
-	req , err := http.NewRequest("GET" , url , nil)
-	if err != nil{
-		fmt.Println(err)
-		return err
-	}
-	req.Header.Set("X-User-Token" , token)
-	_ , err = client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-	Client = client
-	return nil
-}
 
 
 func GetHosts()*Hosts{
 	//X-User-Token: xxxx"
 	var hosts Hosts
 	url := "http://" + N9e_server + GetAllHostsApi
-	SetClient(url)
-	resp , err := Client.Get(url)
+	req , err := http.NewRequest("GET",url,nil)
 	if err != nil{
 		fmt.Println("GetHost Get method Error:",err)
 		return nil
 	}
+	req.Header.Set("X-User-Token" , token)
+	resp , err := (&http.Client{}).Do(req)
 	defer resp.Body.Close()
 	resp_splitbytes , err  := ioutil.ReadAll(resp.Body)
 	if err != nil{
