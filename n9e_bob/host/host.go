@@ -36,7 +36,7 @@ type Hosts struct{
 
 type Dat struct {
 	List []HostInfo `json:"list"`
-	Total string `json:"total"`
+	Total int `json:"total"`
 }
 
 var H *Hosts
