@@ -25,7 +25,7 @@ type HostInfo struct{
 	Mem string `json:"mem"`
 	Disk string `json:"disk"`
 	Cate string	`json:"cate"`
-	Clock string `json:"clock"`
+	Clock int `json:"clock"`
 	Tenant string `json:"tenant"`
 }
 
@@ -69,7 +69,8 @@ func GetHosts()error{
 		return err
 	}
 	H = &hosts
-	//result ,_ := json.Marshal(hosts)
+	result ,_ := json.Marshal(hosts)
+	fmt.Println(string(result))
 	fmt.Println(H)
 	return nil
 }
