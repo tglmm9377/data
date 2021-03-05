@@ -39,21 +39,21 @@ type Dat struct {
 	Total string `json:"total"`
 }
 
-var Client *http.Client
+var H *Hosts
 var url string = "http://"+N9e_server + GetAllHostsApi
 
 
 
 
 
-func GetHosts()*Hosts{
+func GetHosts()error{
 	//X-User-Token: xxxx"
 	var hosts Hosts
 	url := "http://" + N9e_server + GetAllHostsApi
 	req , err := http.NewRequest("GET",url,nil)
 	if err != nil{
 		fmt.Println("GetHost Get method Error:",err)
-		return nil
+		return err
 	}
 	req.Header.Set("X-User-Token" , token)
 	resp , err := (&http.Client{}).Do(req)
@@ -64,6 +64,12 @@ func GetHosts()*Hosts{
 		return nil
 	}
 	err = json.Unmarshal(resp_splitbytes , &hosts)
-	fmt.Println(hosts)
-	return &hosts
+	if err != nil{
+		fmt.Println(err)
+		return err
+	}
+	H = &hosts
+	result ,_ := json.Marshal(hosts)
+	fmt.Println(string(result))
+	return nil
 }
