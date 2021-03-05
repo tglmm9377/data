@@ -40,7 +40,12 @@ type Dat struct {
 }
 
 var Client *http.Client
+var url string = "http://"+N9e_server + GetAllHostsApi
 
+
+func init(){
+	SetClient(url)
+}
 
 func SetClient(url  string)error{
 	client := &http.Client{}
@@ -64,6 +69,7 @@ func GetHosts()*Hosts{
 	//X-User-Token: xxxx"
 	var hosts Hosts
 	url := "http://" + N9e_server + GetAllHostsApi
+	SetClient(url)
 	resp , err := Client.Get(url)
 	if err != nil{
 		fmt.Println("GetHost Get method Error:",err)
