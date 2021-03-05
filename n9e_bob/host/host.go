@@ -41,7 +41,7 @@ type Dat struct {
 func GetHosts()*Hosts{
 
 	var hosts Hosts
-	url := "https://" + N9e_server + GetAllHostsApi
+	url := "http://" + N9e_server + GetAllHostsApi
 	resp , err := http.Get(url)
 	if err != nil{
 		fmt.Println("GetHost Get method Error:",err)
