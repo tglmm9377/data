@@ -69,8 +69,18 @@ func GetHosts()error{
 		return err
 	}
 	H = &hosts
-	result ,_ := json.Marshal(hosts)
-	fmt.Println(string(result))
-	fmt.Println(H)
 	return nil
 }
+
+//
+
+
+
+
+
+
+
+
+
+
+
